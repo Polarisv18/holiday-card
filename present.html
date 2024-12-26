@@ -70,6 +70,7 @@
       z-index: 2; /* Ensure it stays above the snow */
       opacity: 0; /* Initially hidden */
       transition: opacity 1s ease-in-out;
+      position: relative; /* Ensure it appears above other elements */
     }
 
     .present {
@@ -112,7 +113,7 @@
   <div class="snow-container"></div>
 
   <div class="text" id="text">Minh got a lil lil something for you diva, click the present <br> 
-                                     Sorry Santa was late, the diva was busy trying to find some more poppers </div>
+    Sorry Santa was late, the diva was busy trying to find some more poppers</div>
   <img src="present.png" alt="Present" class="present" id="present-image">
 
   <div class="snow-surface"></div>
@@ -159,6 +160,13 @@
         jingleSound.currentTime = 0; // Reset the audio
         textElement.style.opacity = 1; // Show the text
         present.style.opacity = 1; // Show the present
+
+        // Debugging
+        if (textElement.style.opacity == 1) {
+          console.log("Text is visible");
+        } else {
+          console.log("Text is not visible, something went wrong.");
+        }
       }, 5000); // Matches the Santa animation duration
     }
 
