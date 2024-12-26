@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Holiday Card</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0b0d21; /* Dark blue background */
+      font-family: 'Pixelify Sans', sans-serif; /* Pixelated font */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      z-index: 1; /* Ensure it stays above the snow effect */
+      position: relative;
+    }
+
+    .typing-text {
+      font-size: 2.5em; /* Increased font size */
+      color: #ffffff; /* White text */
+      margin-bottom: 20px; /* Spacing between text and elements */
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 3px solid #ffffff; /* White cursor */
+      width: 0;
+      animation: typing 2.5s steps(15) forwards, blink 0.7s step-end infinite;
+    }
+
+    .pixel-button {
+      display: inline-block;
+      padding: 15px 30px;
+      font-size: 1.5em;
+      color: #ff2e2e; /* Christmas red text */
+      background-color: #0a5c0a; /* Dark green background */
+      border: 4px solid #094a09; /* Darker green border */
+      text-transform: uppercase;
+      text-decoration: none;
+      font-family: 'Pixelify Sans', sans-serif;
+      cursor: pointer;
+      box-shadow: 4px 4px 0px #094a09; /* Shadow effect matching border */
+      transition: all 0.2s ease-in-out;
+      margin-top: 10px; /* Reduced spacing between the text and button */
+      position: relative;
+      z-index: 1;
+    }
+
+    .pixel-button:hover {
+      background-color: #094a09; /* Slightly darker green on hover */
+      border-color: #072e07; /* Even darker border on hover */
+      box-shadow: 6px 6px 0px #072e07; /* Deeper shadow on hover */
+      transform: scale(1.1); /* Slight scaling effect */
+    }
+
+    .snow-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .snowflake {
+      position: absolute;
+      top: -10px;
+      background: #ffffff; /* White snowflakes */
+      width: 8px; /* Pixelated snowflake size */
+      height: 8px;
+      box-shadow: 0 0 0 2px #ffffff; /* Hard edges for pixelation */
+      animation: fall linear infinite;
+    }
+
+    .snow-surface {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 70px; /* Height of snow base */
+      background: url('snowbase.png') repeat-x; /* Snow base */
+      background-size: cover; /* Stretch background */
+      z-index: 1;
+    }
+
+    .santa {
+      position: fixed;
+      bottom: 0; /* Position Santa perfectly on the snow base */
+      right: 20px; /* Keep Santa to the right side */
+      width: 200px; /* Adjust Santa's size */
+      height: auto;
+      z-index: 2; /* Ensure Santa is above the snow */
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) translateX(calc(-50px + 100px * var(--randomX)));
+        opacity: 0;
+      }
+    }
+
+    @keyframes typing {
+      from {
+        width: 0;
+      }
+      to {
+        width: 14ch; /* Adjust to the length of "Greetings Divas" */
+      }
+    }
+
+    @keyframes blink {
+      50% {
+        border-color: transparent;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="snow-container"></div>
+
+  <div class="container">
+    <div class="typing-text" id="typing-text">Greetings Divas</div>
+    <a href="present.html" class="pixel-button" id="start-button">Click Here to Start</a>
+  </div>
+
+  <div class="snow-surface"></div>
+
+  <img src="santa.png" alt="Santa Claus" class="santa">
+
+  <audio id="click-sound" src="click.mp3"></audio>
+
+  <script>
+    const snowContainer = document.querySelector('.snow-container');
+    const typingText = document.getElementById('typing-text');
+    const clickSound = document.getElementById('click-sound');
+    const startButton = document.getElementById('start-button');
+
+    function createSnowflake() {
+      const snowflake = document.createElement('div');
+      const leftPosition = Math.random() * 100; // Random horizontal position
+
+      snowflake.classList.add('snowflake');
+      snowflake.style.left = `${leftPosition}vw`;
+      snowflake.style.animationDuration = `${Math.random() * 3 + 2}s`; // Random fall duration
+      snowflake.style.setProperty('--randomX', Math.random()); // Random horizontal drift
+
+      snowContainer.appendChild(snowflake);
+
+      // Remove snowflake after animation
+      setTimeout(() => {
+        snowflake.remove();
+      }, 5000);
+    }
+
+    // Create pixelated snowflakes continuously
+    setInterval(createSnowflake, 100);
+
+    // Play click sound on button click
+    startButton.addEventListener('click', () => {
+      clickSound.play();
+    });
+  </script>
+</body>
+</html>

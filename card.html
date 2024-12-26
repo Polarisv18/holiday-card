@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Card</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0b0d21; /* Dark blue background */
+      font-family: 'Pixelify Sans', sans-serif; /* Pixelated font */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      flex-direction: column; /* Stack items vertically */
+      text-align: center; /* Center text */
+    }
+
+    .snow-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .fireworks-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .snowflake {
+      position: absolute;
+      top: -10px;
+      background: #ffffff; /* White snowflakes */
+      width: 8px; /* Pixelated snowflake size */
+      height: 8px;
+      box-shadow: 0 0 0 2px #ffffff; /* Hard edges for pixelation */
+      animation: fall linear infinite;
+    }
+
+    .sparkle {
+      position: absolute;
+      background: radial-gradient(circle, yellow, transparent);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      opacity: 0;
+      animation: sparkle-animation 2s ease-out infinite;
+    }
+
+    @keyframes sparkle-animation {
+      0% {
+        opacity: 1;
+        transform: scale(0.5);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(2.5);
+      }
+    }
+
+    .snow-surface {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 70px; /* Height of snow base */
+      background: url('snowbase.png') repeat-x; /* Snow base */
+      background-size: cover; /* Stretch background */
+      z-index: 1;
+    }
+
+    .card-image {
+      width: 0; /* Start as 0 to animate scaling */
+      height: auto;
+      opacity: 0; /* Hidden initially */
+      transition: all 1.5s ease-in-out; /* Smooth scaling and fade-in */
+      z-index: 2;
+      box-shadow: 0 0 30px 5px rgba(255, 255, 0, 0.6); /* Halo effect */
+    }
+
+    .card-image.show {
+      width: 300px; /* Final size of the card */
+      opacity: 1; /* Fully visible */
+    }
+
+    .card-image.move-top-right {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 150px; /* Smaller size in the top-right */
+      transition: all 1.5s ease-in-out;
+    }
+
+    .continue-button {
+      display: none; /* Hidden initially */
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1.2em;
+      color: #ffffff; /* White text */
+      background-color: #0a5c0a; /* Dark green background */
+      border: 3px solid #094a09; /* Border color */
+      border-radius: 8px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 3px 3px 0px #072e07; /* Shadow */
+      z-index: 2;
+      font-family: 'Pixelify Sans', sans-serif;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .continue-button:hover {
+      background-color: #094a09; /* Darker green on hover */
+      box-shadow: 5px 5px 0px #072e07; /* Deeper shadow */
+      transform: scale(1.1); /* Slight zoom effect */
+    }
+
+    .final-message {
+      display: none; /* Hidden initially */
+      color: #ffffff; /* White text */
+      font-size: 1.2em;
+      z-index: 2;
+      max-width: 600px;
+      line-height: 1.8; /* Improve readability */
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .restart-button {
+      display: none; /* Hidden initially */
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1.2em;
+      color: #ffffff; /* White text */
+      background-color: #ff2e2e; /* Festive red background */
+      border: 3px solid #cc0000; /* Darker red border */
+      border-radius: 8px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 3px 3px 0px #cc0000; /* Shadow */
+      z-index: 2;
+      font-family: 'Pixelify Sans', sans-serif;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .restart-button:hover {
+      background-color: #cc0000; /* Darker red on hover */
+      box-shadow: 5px 5px 0px #990000; /* Deeper shadow */
+      transform: scale(1.1); /* Slight zoom effect */
+    }
+
+    .video-container {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 80px; /* Smaller video size */
+      z-index: 3;
+      display: none; /* Initially hidden */
+    }
+
+    video {
+      width: 100%; /* Make video responsive */
+      border: 3px solid #ffffff; /* Optional border */
+      border-radius: 8px; /* Rounded corners */
+    }
+
+    .santa {
+      position: absolute;
+      bottom: 70px; /* Ride on the snow surface */
+      width: 120px; /* Size of the Santa image */
+      animation: santa-ride 5s linear infinite alternate; /* Move back and forth */
+    }
+
+    @keyframes santa-ride {
+      0% {
+        left: -150px; /* Start off-screen on the left */
+      }
+      100% {
+        left: 100vw; /* Move to off-screen on the right */
+      }
+    }
+
+    /* Animation for falling snowflakes */
+    @keyframes fall {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) translateX(calc(-50px + 100px * var(--randomX)));
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="snow-container"></div>
+  <div class="fireworks-container" id="fireworks-container"></div>
+  <div class="snow-surface"></div>
+
+  <img src="trish.jpg" alt="Holiday Card" class="card-image" id="card-image">
+  <button class="continue-button" id="continue-button">Click to continue diva</button>
+  <div class="final-message" id="final-message">
+    Happy Holidays and Happy New Year Diva! Thank you so much for being a part of my 2024. <br><br>
+    May great things ride your way, and may you ride on some even greater things. <br><br>
+    Stay fabulous, stay sexy, stay hot. Age does not apply to hot people. Muah muah muah! <br><br>
+    Yours, <br>
+    Minh
+  </div>
+  <button class="restart-button" id="restart-button">Click to start the joy again</button>
+
+  <div class="video-container" id="video-container">
+    <video id="video" src="didyoupraytoday.mp4" loop></video>
+  </div>
+
+  <img src="santa.png" alt="Santa Riding" class="santa" id="santa">
+
+  <!-- Add background music -->
+  <audio id="background-music" src="song.mp3" autoplay loop></audio>
+  <audio id="click-sound" src="click.mp3"></audio>
+
+  <script>
+    const snowContainer = document.querySelector('.snow-container');
+    const fireworksContainer = document.getElementById('fireworks-container');
+    const cardImage = document.getElementById('card-image');
+    const continueButton = document.getElementById('continue-button');
+    const finalMessage = document.getElementById('final-message');
+    const videoContainer = document.getElementById('video-container');
+    const restartButton = document.getElementById('restart-button');
+    const santa = document.getElementById('santa');
+    const backgroundMusic = document.getElementById('background-music');
+    const clickSound = document.getElementById('click-sound');
+
+    // Create pixelated snowflakes
+    function createSnowflake() {
+      const snowflake = document.createElement('div');
+      const leftPosition = Math.random() * 100; // Random horizontal position
+
+      snowflake.classList.add('snowflake');
+      snowflake.style.left = `${leftPosition}vw`;
+      snowflake.style.animationDuration = `${Math.random() * 3 + 2}s`; // Random fall duration
+      snowflake.style.setProperty('--randomX', Math.random()); // Random horizontal drift
+
+      snowContainer.appendChild(snowflake);
+
+      // Remove snowflake after animation
+      setTimeout(() => {
+        snowflake.remove();
+      }, 5000);
+    }
+
+    // Create pixelated snowflakes continuously
+    setInterval(createSnowflake, 100);
+
+    // Create sparkles
+    function createSparkle() {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.style.left = `${Math.random() * 100}vw`;
+      sparkle.style.top = `${Math.random() * 100}vh`;
+      fireworksContainer.appendChild(sparkle);
+
+      setTimeout(() => {
+        sparkle.remove();
+      }, 2000); // Remove sparkle after animation
+    }
+
+    // Trigger sparkles continuously
+    setInterval(createSparkle, 300);
+
+    // Show the card image and button after loading
+    window.onload = () => {
+      backgroundMusic.currentTime = 39; // Start the music at 0:39
+      backgroundMusic.play(); // Start the background music
+
+      setTimeout(() => {
+        cardImage.classList.add('show'); // Show the card image
+        setTimeout(() => {
+          continueButton.style.display = 'inline-block'; // Show the button after 2 seconds
+        }, 2000);
+      }, 1500); // Delay to simulate the pop-up animation
+    };
+
+    // Handle button click to move image, show message, play video, and start fireworks
+    continueButton.addEventListener('click', () => {
+      clickSound.play(); // Play click sound
+      cardImage.classList.add('move-top-right'); // Move trish.jpg to top-right
+      continueButton.style.display = 'none'; // Hide the button
+      finalMessage.style.display = 'block'; // Show the final message
+      restartButton.style.display = 'inline-block'; // Show restart button
+      videoContainer.style.display = 'block'; // Show the video container
+      const video = document.getElementById('video');
+      video.muted = false; // Unmute the video to play its sound
+      video.play(); // Start the video playback
+    });
+
+    // Restart button functionality
+    restartButton.addEventListener('click', () => {
+      window.location.href = 'homepage.html'; // Navigate back to homepage
+    });
+  </script>
+</body>
+</html>
